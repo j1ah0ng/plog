@@ -419,6 +419,19 @@ label.margin-toggle:not(.sidenote-number) {
         display: inline;
     }
 
+    /* Style footnote numbers as tappable on mobile */
+    label.sidenote-number {
+        color: #1a5f7a;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 2px;
+        cursor: pointer;
+    }
+
+    :root[data-theme="dark"] label.sidenote-number {
+        color: #9cf;
+    }
+
     .sidenote,
     .marginnote {
         display: none;
@@ -436,6 +449,12 @@ label.margin-toggle:not(.sidenote-number) {
         position: relative;
     }
 
+    /* Remove underline when expanded */
+    label.sidenote-number:has(+ .margin-toggle:checked) {
+        text-decoration: none;
+        color: inherit;
+    }
+
     label {
         cursor: pointer;
     }
@@ -447,5 +466,58 @@ label.margin-toggle:not(.sidenote-number) {
 
     img {
         width: 100%;
+    }
+}
+
+/* Print styles - expand all footnotes */
+@media print {
+    .sidenote,
+    .marginnote {
+        display: block !important;
+        float: right;
+        clear: right;
+        margin-right: -60%;
+        width: 50%;
+        margin-top: 0.3rem;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+        line-height: 1.3;
+        vertical-align: baseline;
+        position: relative;
+    }
+
+    /* Hide the toggle elements */
+    input.margin-toggle {
+        display: none !important;
+    }
+
+    label.margin-toggle:not(.sidenote-number) {
+        display: none !important;
+    }
+
+    /* Remove interactive styling from footnote numbers */
+    label.sidenote-number {
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+
+    /* Hide theme toggle */
+    .theme-toggle {
+        display: none !important;
+    }
+
+    /* Ensure good contrast */
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    a:link, a:visited {
+        color: black !important;
+    }
+
+    /* Don't break inside important elements */
+    pre, blockquote, figure, .sidenote {
+        break-inside: avoid;
     }
 }

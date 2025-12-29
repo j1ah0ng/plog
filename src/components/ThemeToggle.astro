@@ -2,8 +2,8 @@
 ---
 
 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-  <span class="icon-sun">☀</span>
-  <span class="icon-moon">☽</span>
+  <span class="icon-sun">☀︎</span>
+  <span class="icon-moon">☾</span>
 </button>
 
 <script is:inline>
@@ -24,32 +24,48 @@
     position: fixed;
     top: 1rem;
     right: 1rem;
-    background: none;
+    background: var(--toggle-bg, #fffff8);
     border: 1px solid currentColor;
     border-radius: 4px;
     padding: 0.4rem 0.6rem;
     font-size: 1.2rem;
     cursor: pointer;
     color: inherit;
-    opacity: 0.6;
+    opacity: 0.7;
     transition: opacity 0.2s;
     z-index: 100;
+  }
+
+  :global([data-theme="dark"]) .theme-toggle {
+    --toggle-bg: #151515;
   }
 
   .theme-toggle:hover {
     opacity: 1;
   }
 
+  @media (max-width: 760px) {
+    .theme-toggle {
+      top: auto;
+      bottom: 1rem;
+      right: 1rem;
+      font-size: 1rem;
+      padding: 0.3rem 0.5rem;
+    }
+  }
+
   .icon-sun,
   .icon-moon {
     display: none;
+    width: 1em;
+    text-align: center;
   }
 
   :global([data-theme="dark"]) .icon-sun {
-    display: inline;
+    display: inline-block;
   }
 
   :global([data-theme="light"]) .icon-moon {
-    display: inline;
+    display: inline-block;
   }
 </style>
