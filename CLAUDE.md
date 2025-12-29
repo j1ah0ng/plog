@@ -1,10 +1,10 @@
 # CLAUDE.md - Session State
 
 ## Status
-plog MVP complete and building successfully.
+plog complete. Using canonical Tufte CSS with Computer Modern font.
 
 ## Stack
-Astro 5 + MDX + KaTeX + Computer Modern (CDN) + GitHub Pages
+Astro 5 + MDX + Tufte CSS + KaTeX + Computer Modern (CDN) + GitHub Pages
 
 ## Commands
 - `yarn dev` - local dev server
@@ -13,9 +13,8 @@ Astro 5 + MDX + KaTeX + Computer Modern (CDN) + GitHub Pages
 
 ## Key Files
 - `src/content/posts/*.mdx` - blog posts
-- `src/components/Sidenote.astro` - margin footnotes
-- `src/components/TOC.astro` - scroll-synced table of contents
-- `src/components/interactive/PlotlyChart.astro` - interactive charts
+- `src/components/Sidenote.astro` - margin footnotes (checkbox toggle, no JS)
+- `src/styles/tufte.css` - canonical Tufte CSS adapted for Computer Modern
 - `astro.config.mjs` - site/base config for GitHub Pages
 
 ## To Deploy
@@ -24,7 +23,6 @@ Astro 5 + MDX + KaTeX + Computer Modern (CDN) + GitHub Pages
 3. Enable GitHub Pages (Settings > Pages > Source: GitHub Actions)
 
 ## Writing Posts
-Create `.mdx` files in `src/content/posts/` with frontmatter:
 ```yaml
 ---
 title: "Post Title"
@@ -34,5 +32,6 @@ draft: false
 ---
 ```
 
-Use `<Sidenote id="1">content</Sidenote>` for margin notes.
-Use `$...$` for inline math, `$$...$$` for display math.
+Sidenotes: `<Sidenote id="1">content</Sidenote>`
+Math: `$...$` inline, `$$...$$` display
+Dark mode: automatic via `prefers-color-scheme`

@@ -64,7 +64,7 @@ const defaultConfig = {
 
 <style>
   .plotly-chart {
-    width: 100%;
+    width: 55%;
     min-height: 300px;
     margin: 1.5rem 0;
   }
@@ -74,7 +74,13 @@ const defaultConfig = {
     align-items: center;
     justify-content: center;
     height: 300px;
-    color: var(--color-text-muted);
+    color: #666;
     font-style: italic;
+  }
+
+  @media (max-width: 760px) {
+    .plotly-chart {
+      width: 100%;
+    }
   }
 </style>
