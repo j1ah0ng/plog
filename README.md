@@ -1,19 +1,58 @@
 # plog
 
-Clauding! The task is to build and deploy tooling to display writing in a blog-like website. The user flow:
+A static blog with Tufte-style typography, margin sidenotes, LaTeX math, and interactive visualizations.
 
-## Publishing blog posts
+## Stack
 
-A file (perhaps markdown, it's not clear what the best choice is) is published to the repository. It may contains inline LaTeX, express support for footnotes, hyperlinks, images, etc., or even rich interactive content, such as d3.js views, or Plotly graphs. 
+- **Framework**: Astro 5 + MDX
+- **Styling**: Tufte CSS (adapted)
+- **Fonts**: Latin Modern Roman (body), JetBrains Mono (code)
+- **Math**: KaTeX
+- **Charts**: Plotly.js
+- **Deployment**: GitHub Pages via Actions
 
-## Display
+## Development
 
-By some means (e.g. upon CI or something else) the raw post files are serialized to a page which has the look and feel of LessWrong, or Thinking Machines' blog posts. We would like a similar respect for the reader - in terms of wide margins, helpful footnote displays, a beautiful serifed font. 
+```bash
+yarn install
+yarn dev      # local dev server
+yarn build    # production build
+yarn preview  # preview build
+```
 
-### Website structure
+## Writing Posts
 
-We would like a simple directory page which displays and list the available posts by date.
+Create `.mdx` files in `src/content/posts/`:
 
-### Post display page
+```mdx
+---
+title: "Post Title"
+date: 2025-01-15
+description: "Brief description"
+draft: false
+---
 
-Here is the most important part. When displaying each page, we want a rich but focused experience for the user. The sidebar should provide a vertical "timeline" of the post (e.g. lists out headers and subheaders, important footnotes, images) and indicate vertically where the current scroll view is in the page. We want wide margins when viewed on desktop. Footnotes should be displayed alongside the page, in the margins. The reading experience must not be impaired; we want to present information in as pleasant a format as possible so as to encourage flow state.
+import Sidenote from '../../components/Sidenote.astro';
+
+Body text with a sidenote.<Sidenote id="1">Appears in margin on desktop, expands on tap on mobile.</Sidenote>
+
+Inline math: $e^{i\pi} + 1 = 0$
+
+Display math:
+$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+```
+
+## Features
+
+- **Sidenotes**: Margin notes on desktop, tap-to-expand on mobile
+- **Dark/light mode**: Toggle button, persists preference, respects system default
+- **Responsive**: Wide margins on desktop, full-width on mobile
+- **Print styles**: All sidenotes expanded, good contrast
+- **LaTeX**: Full KaTeX support for math
+- **Interactive charts**: Plotly.js integration
+
+## Deployment
+
+1. Update `site` in `astro.config.mjs` with your GitHub username
+2. Push to `master` branch
+3. Enable GitHub Pages (Settings → Pages → Source: GitHub Actions)

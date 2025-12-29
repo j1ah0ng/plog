@@ -3,8 +3,8 @@
 /* Tufte CSS - adapted from https://github.com/edwardtufte/tufte-css
    Modified to use Computer Modern font */
 
-/* Computer Modern Serif - loaded via CDN */
-@import url('https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/fonts.css');
+/* Latin Modern Roman - Unicode-complete successor to Computer Modern */
+@import url('https://fonts.cdnfonts.com/css/latin-modern-roman');
 
 /* JetBrains Mono for code */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -19,7 +19,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     padding-left: 12.5%;
-    font-family: "Computer Modern Serif", "Latin Modern Roman", Palatino, "Palatino Linotype", Georgia, serif;
+    font-family: "LMRoman10", "Latin Modern Roman", Palatino, "Palatino Linotype", Georgia, serif;
     background-color: #fffff8;
     color: #111;
     max-width: 1400px;
