@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+
+const posts = await getCollection('posts', ({ data }) => {
+  return import.meta.env.PROD ? !data.draft : true;
+});
+
+// Sort by date descending
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="plog" description="A collection of writings">
+  <main class="index-container">
+    <header class="site-header">
+      <h1>plog</h1>
+      <p class="site-description">A collection of writings.</p>
+    </header>
+
+    {posts.length > 0 ? (
+      <PostList posts={posts} />
+    ) : (
+      <p class="no-posts">No posts yet.</p>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  @import '../styles/global.css';
+
+  .index-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .site-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e8e8e0;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 400;
+  }
+
+  .site-description {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .no-posts {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+</style>

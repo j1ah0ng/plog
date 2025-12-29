@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { posts } = Astro.props;
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+};
+---
+
+<ul class="post-list">
+  {posts.map((post) => (
+    <li class="post-item">
+      <a href={`/plog/posts/${post.slug}/`}>
+        <time datetime={post.data.date.toISOString()}>
+          {formatDate(post.data.date)}
+        </time>
+        <h2>{post.data.title}</h2>
+        <p>{post.data.description}</p>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .post-item {
+    margin: 2rem 0;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e8e8e0;
+  }
+
+  .post-item:last-child {
+    border-bottom: none;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  a:hover h2 {
+    color: var(--color-link);
+  }
+
+  time {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem 0;
+    transition: color 0.2s;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    max-width: 60ch;
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+interface Props {
+  id: string | number;
+}
+
+const { id } = Astro.props;
+---
+
+<span class="sidenote-ref" data-sidenote={id}></span>
+<span class="sidenote" id={`sidenote-${id}`}>
+  <slot />
+</span>
+
+<style>
+  .sidenote-ref {
+    counter-increment: sidenote-counter;
+    cursor: pointer;
+  }
+
+  .sidenote-ref::after {
+    content: counter(sidenote-counter);
+    font-size: 0.65em;
+    vertical-align: super;
+    color: var(--color-link);
+    margin-left: 0.1em;
+  }
+
+  .sidenote {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+  }
+
+  .sidenote::before {
+    content: counter(sidenote-counter) '. ';
+    font-size: 0.8em;
+    color: var(--color-link);
+  }
+
+  /* Desktop: float to right margin */
+  @media (min-width: 1200px) {
+    .sidenote {
+      float: right;
+      clear: right;
+      margin-right: -280px;
+      width: 240px;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Tablet: smaller margin */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    .sidenote {
+      float: right;
+      clear: right;
+      margin-right: -180px;
+      width: 160px;
+      font-size: 0.8rem;
+    }
+  }
+
+  /* Mobile: inline expandable */
+  @media (max-width: 767px) {
+    .sidenote {
+      display: none;
+      background: var(--color-bg-sidenote);
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+      border-left: 3px solid var(--color-link);
+      width: 100%;
+      float: none;
+    }
+
+    .sidenote:global(.expanded) {
+      display: block;
+    }
+
+    .sidenote-ref:global(.has-expanded)::after {
+      color: var(--color-link-hover);
+    }
+  }
+</style>

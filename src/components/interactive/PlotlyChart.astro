@@ -1,0 +1,80 @@
+---
+interface Props {
+  data: any[];
+  layout?: Record<string, any>;
+  config?: Record<string, any>;
+  class?: string;
+}
+
+const { data, layout = {}, config = {}, class: className = '' } = Astro.props;
+
+const chartId = `plotly-${Math.random().toString(36).slice(2, 9)}`;
+
+const defaultLayout = {
+  font: { family: 'Computer Modern Serif, Georgia, serif' },
+  paper_bgcolor: 'transparent',
+  plot_bgcolor: 'transparent',
+  margin: { t: 40, r: 20, b: 40, l: 50 },
+  ...layout,
+};
+
+const defaultConfig = {
+  responsive: true,
+  displayModeBar: false,
+  ...config,
+};
+---
+
+<div
+  id={chartId}
+  class:list={['plotly-chart', className]}
+  data-plotly-data={JSON.stringify(data)}
+  data-plotly-layout={JSON.stringify(defaultLayout)}
+  data-plotly-config={JSON.stringify(defaultConfig)}
+>
+  <div class="chart-loading">Loading chart...</div>
+</div>
+
+<script>
+  async function initPlotlyCharts() {
+    const charts = document.querySelectorAll('.plotly-chart[data-plotly-data]');
+
+    if (charts.length === 0) return;
+
+    // Dynamically import Plotly
+    const Plotly = await import('plotly.js-dist-min');
+
+    charts.forEach((el) => {
+      const data = JSON.parse(el.getAttribute('data-plotly-data') || '[]');
+      const layout = JSON.parse(el.getAttribute('data-plotly-layout') || '{}');
+      const config = JSON.parse(el.getAttribute('data-plotly-config') || '{}');
+
+      el.innerHTML = '';
+      Plotly.newPlot(el, data, layout, config);
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPlotlyCharts);
+  } else {
+    initPlotlyCharts();
+  }
+</script>
+
+<style>
+  .plotly-chart {
+    width: 100%;
+    min-height: 300px;
+    margin: 1.5rem 0;
+  }
+
+  .chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+</style>

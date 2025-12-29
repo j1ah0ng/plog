@@ -1,0 +1,99 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/TOC.astro';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    date: Date;
+    description: string;
+  };
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { frontmatter, headings } = Astro.props;
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+};
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <article class="post-container">
+    <TOC headings={headings} />
+
+    <div class="post-content">
+      <header class="post-header">
+        <h1 class="post-title">{frontmatter.title}</h1>
+        <time class="post-date" datetime={frontmatter.date.toISOString()}>
+          {formatDate(frontmatter.date)}
+        </time>
+      </header>
+
+      <slot />
+
+      <footer class="post-footer">
+        <a href="/plog/">← Back to all posts</a>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  @import '../styles/tufte.css';
+</style>
+
+<script>
+  // Scroll spy for TOC
+  document.addEventListener('DOMContentLoaded', () => {
+    const headings = document.querySelectorAll('h1, h2, h3');
+    const tocLinks = document.querySelectorAll('.toc-sidebar a');
+
+    if (headings.length === 0 || tocLinks.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            tocLinks.forEach((link) => {
+              const li = link.parentElement;
+              if (link.getAttribute('href') === `#${id}`) {
+                li?.classList.add('active');
+              } else {
+                li?.classList.remove('active');
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '-20% 0px -60% 0px',
+      }
+    );
+
+    headings.forEach((heading) => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+
+    // Mobile sidenote toggle
+    document.querySelectorAll('.sidenote-ref').forEach((ref) => {
+      ref.addEventListener('click', (e) => {
+        if (window.innerWidth < 768) {
+          e.preventDefault();
+          const sidenote = ref.nextElementSibling;
+          if (sidenote?.classList.contains('sidenote')) {
+            sidenote.classList.toggle('expanded');
+            ref.classList.toggle('has-expanded');
+          }
+        }
+      });
+    });
+  });
+</script>

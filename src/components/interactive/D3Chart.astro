@@ -1,0 +1,50 @@
+---
+interface Props {
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { width = 600, height = 400, class: className = '' } = Astro.props;
+
+const chartId = `d3-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  id={chartId}
+  class:list={['d3-chart', className]}
+  data-width={width}
+  data-height={height}
+>
+  <slot />
+</div>
+
+<style>
+  .d3-chart {
+    width: 100%;
+    max-width: 100%;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .d3-chart :global(svg) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .d3-chart :global(text) {
+    font-family: var(--font-body);
+    fill: var(--color-text);
+  }
+
+  .d3-chart :global(.axis line),
+  .d3-chart :global(.axis path) {
+    stroke: #ccc;
+  }
+
+  .d3-chart :global(.axis text) {
+    font-size: 0.85rem;
+    fill: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+title: "On the Art of Writing"
+date: 2025-01-15
+description: "A demonstration of this blog's capabilities, from mathematics to interactive visualizations."
+draft: false
+---
+
+import Sidenote from '../../components/Sidenote.astro';
+import PlotlyChart from '../../components/interactive/PlotlyChart.astro';
+
+This is a demonstration post showcasing the features of this blog. The design draws inspiration from Edward Tufte's principles of information display and the aesthetic of academic publishing.
+
+## Typography and Sidenotes
+
+Good typography respects the reader's attention.<Sidenote id="1">As Tufte writes, "The minimum we should hope for with any display technology is that it should do no harm." This sidenote appears in the margin on desktop, and expands inline when tapped on mobile.</Sidenote> The body text uses Computer Modern, the same typeface used in LaTeX documents, creating a familiar feel for those accustomed to academic reading.
+
+The measure—the length of a line of text—is kept to approximately 65 characters, which research suggests is optimal for reading comprehension.<Sidenote id="2">Studies by Dyson & Kipping (1998) found that moderate line lengths (55-75 characters) led to faster reading speeds without sacrificing comprehension.</Sidenote>
+
+## Mathematics
+
+This blog supports LaTeX mathematics via KaTeX. Inline math like $e^{i\pi} + 1 = 0$ renders naturally within text.
+
+For display equations, we can write:
+
+$$
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+$$
+
+Or the famous Gaussian integral:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+### Bayes' Theorem
+
+Perhaps the most important equation in probabilistic reasoning:
+
+$$
+P(H \mid E) = \frac{P(E \mid H) \cdot P(H)}{P(E)}
+$$
+
+Where $P(H \mid E)$ is the posterior probability of hypothesis $H$ given evidence $E$.<Sidenote id="3">This formulation is the foundation of Bayesian inference, which provides a principled way to update beliefs based on new evidence.</Sidenote>
+
+## Code
+
+Code blocks are styled to maintain the paper-like aesthetic:
+
+```python
+def fibonacci(n: int) -> int:
+    """Return the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+```
+
+## Interactive Visualizations
+
+This blog supports interactive charts via Plotly. Here's a simple example:
+
+<PlotlyChart
+  data={[
+    {
+      x: [1, 2, 3, 4, 5],
+      y: [1, 4, 9, 16, 25],
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'y = x²',
+      line: { color: '#1a5f7a' }
+    }
+  ]}
+  layout={{
+    title: 'A Simple Quadratic',
+    xaxis: { title: 'x' },
+    yaxis: { title: 'y' }
+  }}
+/>
+
+## Blockquotes
+
+> The purpose of visualization is insight, not pictures.
+>
+> — Ben Shneiderman
+
+## Lists
+
+When presenting information, lists can be effective:
+
+1. First, establish context
+2. Then, present the core argument
+3. Finally, address implications and limitations
+
+Or unordered:
+
+- Wide margins create space for sidenotes
+- Serif fonts improve readability for long-form text
+- Careful typography demonstrates respect for the reader
+
+## Conclusion
+
+This template aims to create a reading environment that encourages focus and contemplation. The design choices—Computer Modern typography, generous margins, inline sidenotes—all serve the goal of presenting ideas clearly.<Sidenote id="4">As with all tools, the template is just a starting point. The quality of the writing remains the most important factor.</Sidenote>
+
+The hope is that this environment helps both writer and reader engage more deeply with ideas.

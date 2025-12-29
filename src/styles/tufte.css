@@ -1,0 +1,230 @@
+/* Tufte-style layout with sidenotes */
+
+/* Main layout container */
+.post-container {
+  display: grid;
+  grid-template-columns: 1fr min(var(--measure), 100%) 1fr;
+  gap: 0 2rem;
+  padding: 2rem 1rem;
+}
+
+.post-container > * {
+  grid-column: 2;
+}
+
+/* TOC sidebar - fixed on desktop */
+.toc-sidebar {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  width: 200px;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.toc-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-sidebar li {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.toc-sidebar li.active {
+  border-left-color: var(--color-link);
+}
+
+.toc-sidebar a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  display: block;
+}
+
+.toc-sidebar a:hover,
+.toc-sidebar li.active a {
+  color: var(--color-text);
+}
+
+/* Scroll progress indicator */
+.toc-progress {
+  position: absolute;
+  left: 0;
+  width: 2px;
+  background: var(--color-link);
+  transition: top 0.1s, height 0.1s;
+}
+
+/* Sidenote numbering counter */
+.post-content {
+  counter-reset: sidenote-counter;
+}
+
+/* Sidenote reference number (in text) */
+.sidenote-ref {
+  counter-increment: sidenote-counter;
+  position: relative;
+}
+
+.sidenote-ref::after {
+  content: counter(sidenote-counter);
+  font-size: 0.7em;
+  vertical-align: super;
+  color: var(--color-link);
+  margin-left: 0.1em;
+  cursor: pointer;
+}
+
+/* Sidenote content */
+.sidenote {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  max-width: 250px;
+}
+
+.sidenote-number {
+  font-size: 0.7em;
+  vertical-align: super;
+  color: var(--color-link);
+  margin-right: 0.3em;
+}
+
+/* Desktop: sidenotes in right margin */
+@media (min-width: 1200px) {
+  .post-container {
+    grid-template-columns: 220px 1fr minmax(250px, 300px);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .post-content {
+    grid-column: 2;
+  }
+
+  .sidenote {
+    float: right;
+    clear: right;
+    margin-right: -280px;
+    width: 250px;
+    margin-top: 0.3rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .sidenote::before {
+    content: counter(sidenote-counter);
+    font-size: 0.7em;
+    vertical-align: super;
+    color: var(--color-link);
+    margin-right: 0.3em;
+  }
+
+  .toc-sidebar {
+    position: sticky;
+    top: 2rem;
+    grid-column: 1;
+    grid-row: 1 / span 100;
+    justify-self: end;
+    left: auto;
+    padding-right: 1rem;
+  }
+}
+
+/* Tablet: narrower sidenotes */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .post-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .sidenote {
+    float: right;
+    clear: right;
+    margin-right: -200px;
+    width: 180px;
+    font-size: 0.8rem;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+}
+
+/* Mobile: inline expandable sidenotes */
+@media (max-width: 767px) {
+  .post-container {
+    padding: 1rem;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  .sidenote {
+    display: none;
+    background: var(--color-bg-sidenote);
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+    border-left: 3px solid var(--color-link);
+    max-width: 100%;
+    float: none;
+    width: auto;
+  }
+
+  .sidenote.expanded {
+    display: block;
+  }
+
+  .sidenote-ref.has-expanded + .sidenote {
+    display: block;
+  }
+}
+
+/* Post header */
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-date {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* Post footer */
+.post-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ddd;
+}
+
+/* Full-width elements (images, code blocks) */
+.full-width {
+  grid-column: 1 / -1;
+  max-width: 100%;
+}
+
+/* Interactive content containers */
+.interactive-chart {
+  margin: 2rem 0;
+  min-height: 300px;
+}
+
+/* KaTeX overrides */
+.katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
