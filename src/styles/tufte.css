@@ -366,7 +366,8 @@ label.margin-toggle:not(.sidenote-number) {
 }
 
 /* KaTeX overrides */
-.katex {
+/* Inline math only - display math keeps default 1.21em */
+.katex:not(.katex-display .katex) {
     font-size: 1em;
 }
 
