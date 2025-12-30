@@ -1,0 +1,139 @@
+---
+title: "Learning the Nonlinearity"
+date: 2024-06-10
+description: "A literature review on KANs: learning nonlinear activations instead of linear weights."
+draft: false
+---
+
+import Sidenote from '../../components/Sidenote.astro';
+
+This is an adaptation of a theory presentation I gave while at Cruise in June 2024, motivated by [Liu, Wang et al.'s paper on KANs](https://arxiv.org/pdf/2404.19756v1). The goal is to build intuition rather than mechanical $\varepsilon$-$\delta$ proofs.
+
+For simplicity, assume the functions we care about are *of multiple variables* and *scalar-valued*:
+
+$$
+f: \mathbb{R}^n \longrightarrow \mathbb{R}
+$$
+
+## A gentle (re)introduction to the multi-layer perceptron
+
+The multi-layer perceptron (MLP) is the fundamental building block of so-called *deep* neural networks, where "deep" refers to the number of layers.
+
+Canonically, a "shallow" multi-layer perceptron has *two layers*.<Sidenote id="1">This distinction matters for the theoretical literature.</Sidenote> A shallow MLP is represented as:
+
+$$
+\hat{f}(x) = \sum_i^{N(\varepsilon)} a_i \sigma \left[\mathbf{W}_i \mathbf{x} + b_i \right]
+$$
+
+where:
+
+- $b_i$ is the bias *(affine!)*
+- $\mathbf{x}$ is the input vector
+- $\mathbf{W}_i$ is the $i$th weight matrix *(learned!)*
+- $\sigma$ is the activation function *(e.g. ReLU, sigmoid, $\tanh$...)*
+- $a_i$ are elements of the outermost weight matrix
+- $N(\varepsilon)$ is the number of neurons (in the shallow case, this equals the width)
+
+More generally, for deep ($d > 2$) networks, a multi-layer perceptron is a composition of affine linear transformations separated by non-linear activations:
+
+$$
+\text{MLP}(x) = \left[ W_d \circ \sigma_d \circ W_{d-1} \circ \sigma_{d-1} \circ \ldots \circ W_{1} \circ \sigma_{1} \right] (x)
+$$
+
+**Question:** What can a multi-layer perceptron represent?
+
+## Universal approximation
+
+**Answer:** Anything!*
+
+Let $D \subset \mathbb{R}^n$ be compact.<Sidenote id="2">Compact denotes some notion of "closed and bounded"—the $n$-dimensional equivalent of a closed interval $[a, b] \subset \mathbb{R}$.</Sidenote> Let $f: D \longrightarrow \mathbb{R}$ be an *arbitrary nonlinear function*, and let $\hat{f}: D \longrightarrow \mathbb{R}$ denote a shallow (2-layer) multi-layer perceptron.
+
+> **Theorem (Universal Approximation).** For arbitrary $\varepsilon \in \mathbb{R} > 0$, there exists $N(\varepsilon)$ such that
+> $$|f(x) - \hat{f}(x)| \leq \varepsilon$$
+
+So we can model basically anything! But the practical question is: **What is $N(\varepsilon)$?**
+
+Is it $O(\log \varepsilon^{-1})$? $O(\varepsilon^{-1})$? $O(\exp \varepsilon^{-1})$?
+
+## Neural scaling
+
+**We don't know, in general!** The universal approximation theorem guarantees no bounds on $N$. For deep networks, we know it's possibly poorly behaved ($N \propto \exp(d)$, where $d$ is the layer depth).
+
+**Why does this make sense?** Because we are fitting a "mostly linear" model to an "arbitrary non-linear" function. We need "a lot of linear pieces" to get good at modeling funky nonlinear functions.
+
+Consider approximating $f = x^2$ with piecewise linear segments: it takes many line segments to approximate even a simple quadratic on $[-3, 3]$, and as soon as we leave that interval, the error blows up.
+
+This leads to *neural scaling laws*, which formalize the notion that "mostly linear things approximate nonlinearities inefficiently." In particular, the training loss<Sidenote id="3">i.e., the loss that overfits to training data</Sidenote> $\ell$ decreases according to a power-law regime:
+
+$$
+\ell \propto N^{-\alpha}
+$$
+
+where $\alpha$ is the *scaling exponent* and $N$ is the number of parameters. In essence, to decrease the loss linearly requires an exponential increase in parameters.
+
+Fundamentally, if the underlying process is nonlinear, we are trying to fit a big piecewise linear function and combining pieces with fixed nonlinearities (ReLU, sigmoid, tanh, etc.).
+
+**Idea:** Why not *learn the nonlinearity*?
+
+Using linear piecewise bits to represent a nonlinear function seems impractical. We already use nonlinear basis functions to fit models (polynomial regression, exponential regression, spline fitting). This is the basic idea behind the Kolmogorov-Arnold network.
+
+## Kolmogorov-Arnold representation
+
+The fundamental architectural difference between the MLP and the Kolmogorov-Arnold Network (KAN) is that nodes and edges are flipped. In an MLP, nodes apply fixed nonlinear activations to learned linear combinations of inputs. In a KAN, edges apply *learned* nonlinear functions to inputs.
+
+The MLP was underpinned by the Universal Approximation theorem. The KAN is similarly underpinned by the Kolmogorov-Arnold representation theorem.
+
+Let $f$ be a continuous function defined on a closed hypercube, i.e., $f : [0,1]^n \subset \mathbb{R}^n \longrightarrow \mathbb{R}$.
+
+> **Theorem (Kolmogorov-Arnold Representation).** $f$ admits a representation as the sum of continuous functions of a single variable. There exist $\phi_{q, p} : [0, 1] \longrightarrow \mathbb{R}$ and $\Phi_q: \mathbb{R} \longrightarrow \mathbb{R}$ where
+> $$f(x) = f(x_1, x_2, \ldots, x_n) = \sum_{q=0}^{2n} \Phi_q \left( \sum_{p=1}^n \phi_{q, p} (x_p) \right)$$
+
+What does this mean? Rather surprisingly, it tells us that *every multivariable function defined on a compact set can be written with a collection of univariate functions, composed and added together*:
+
+$$
+\underbrace{f(x_1, x_2, \ldots, x_n)}_{\text{multivariate}} = \sum_{q=0}^{2n} \underbrace{\Phi_q}_{\text{univariate}} \left( \sum_{p=1}^n \underbrace{\phi_{q, p}}_{\text{univariate}} (x_p) \right)
+$$
+
+There is a catch: we have no guarantees on how nicely-behaved these univariate functions are. They could be nondifferentiable or even fractal.
+
+Fortunately, in practice, if you're modeling a real-life process, the odds are good that the functions will be reasonably well-behaved. Training *B-splines* turns out to be effective.
+
+> **Definition.** A B-spline of order $n$ is a *piecewise polynomial* function of degree $n - 1$; the points where they meet are called *knots*. It has derivatives continuous up to degree $n - 1$ (if all knots are distinct). B-splines can smoothly approximate any function on a compact domain to within arbitrary precision by interpolating between knots.
+
+The KA theorem only discusses the shallow (2-layer) case, but like deep MLPs, we can stack KAN layers together. A deep KAN admits a simple representation:
+
+$$
+\text{KAN}(x) = (\phi_d \circ \phi_{d-1} \circ \ldots \circ \phi_1)(x)
+$$
+
+Compare to the deep MLP formulation:
+
+$$
+\text{MLP}(x) = \left[ W_d \circ \sigma_d \circ W_{d-1} \circ \sigma_{d-1} \circ \ldots \circ W_{1} \circ \sigma_{1} \right] (x)
+$$
+
+### Scaling properties
+
+From the previous discussion about neural scaling, we might expect a KAN to be *more efficient* at representing nonlinear processes than a deep MLP. **Is this true?**
+
+**Yes!** Liu et al. demonstrate significantly better RMSE vs. parameter count tradeoffs for KANs compared to MLPs.
+
+> **Theorem (Kolmogorov-Arnold, assuming continuity).** Let $f(x)$ admit a deep KA representation $f = (\phi_{d} \circ \phi_{d - 1} \circ \ldots \circ \phi_1)(x)$ where each constituent function is $k+1$ times continuously differentiable. Then each $\varphi$ can be written as a sum of univariate order-$k$ B-splines, and there exists $C \geq 0$ such that for any $0 \leq m \leq k$:
+> $$||f - (\phi_{d}^G \circ \phi_{d-1}^G \circ \ldots \circ \phi_1^G)||_{C^m} \leq CG^{-k-1+m}$$
+> where $G$ is the number of knots.
+
+This implies that the error between a deep KAN and the underlying function is *independent of dimension*. KANs are *free from the curse of dimensionality*—we can therefore expect (and observe) better neural scaling laws.
+
+Further, the bound $CG^{-(k+1)+m}$ implies we can fine-tune the univariate representations<Sidenote id="4">Liu et al. refer to this process as "grid extension."</Sidenote> by increasing $G$, the number of knots, without changing the model's dimensionality.
+
+### Interpretability
+
+What does a learned spline look like? It turns out they look quite intuitive—the shape of trained KANs often corresponds well to the structure of the input function. With regularization and sparsification in the objective function, KANs can be trained to prune themselves down to minimal depth and breadth, to the point that you can almost elicit an analytical function from the shape of the network.
+
+There are many fascinating knot-theoretic and physics-based examples in the original paper.
+
+## Why are we only hearing about KANs now?
+
+There has been previous work on applying Kolmogorov-Arnold representation to neural networks, but much of it predates modern concepts like backpropagation and efficient gradient methods. KAN training is also far more involved than MLP training—learning arbitrary univariate functions on every edge requires more sophisticated optimization than learning scalar weights.
+
+The combination of modern automatic differentiation frameworks, GPU acceleration, and the specific architectural choices in Liu et al.'s work (B-splines, grid extension, sparsification) has made KANs practical for the first time.
