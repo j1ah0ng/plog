@@ -88,6 +88,7 @@ h2 {
     margin-bottom: 1.4rem;
     font-size: 2.2rem;
     line-height: 1;
+    width: 55%;
 }
 
 h3 {
@@ -97,6 +98,7 @@ h3 {
     margin-top: 2rem;
     margin-bottom: 1.4rem;
     line-height: 1;
+    width: 55%;
 }
 
 hr {
@@ -379,6 +381,8 @@ label.margin-toggle:not(.sidenote-number) {
     }
 
     hr,
+    h2,
+    h3,
     section > p,
     section > footer,
     section > table {
