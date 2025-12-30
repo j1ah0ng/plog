@@ -91,6 +91,19 @@ h2 {
     width: 55%;
 }
 
+h2 a, h3 a {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    transition: background-size 0.2s ease-out;
+}
+
+h2 a:hover, h3 a:hover {
+    background-size: 100% 1px;
+}
+
 h3 {
     font-style: italic;
     font-weight: 400;
