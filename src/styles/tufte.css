@@ -366,6 +366,10 @@ label.margin-toggle:not(.sidenote-number) {
 }
 
 /* KaTeX overrides */
+.katex {
+    font-size: 1em;
+}
+
 .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
