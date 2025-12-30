@@ -395,7 +395,8 @@ label.margin-toggle:not(.sidenote-number) {
     h3,
     section > p,
     section > footer,
-    section > table {
+    section > table,
+    .katex-display {
         width: 100%;
     }
 
