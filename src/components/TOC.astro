@@ -1,0 +1,260 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to h2 and h3 only
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+
+{tocHeadings.length > 0 && (
+  <nav class="scroll-timeline" aria-label="Document progress">
+    <div class="timeline-track">
+      <div class="timeline-fill"></div>
+      {tocHeadings.map((heading) => (
+        <button
+          class="timeline-marker"
+          data-heading={heading.slug}
+          aria-label={heading.text}
+        >
+          <span class="marker-dot"></span>
+          <span class="marker-label">{heading.text}</span>
+        </button>
+      ))}
+    </div>
+  </nav>
+)}
+
+<script>
+  function initTimeline() {
+    const timeline = document.querySelector('.scroll-timeline');
+    if (!timeline) return;
+
+    const fill = timeline.querySelector('.timeline-fill') as HTMLElement;
+    const markers = timeline.querySelectorAll('.timeline-marker') as NodeListOf<HTMLButtonElement>;
+
+    // Get heading elements and calculate their positions
+    const headingData: { el: HTMLElement; marker: HTMLButtonElement; position: number }[] = [];
+
+    function calculatePositions() {
+      headingData.length = 0;
+      const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+
+      markers.forEach(marker => {
+        const slug = marker.getAttribute('data-heading');
+        const heading = document.getElementById(slug!);
+        if (heading && scrollRange > 0) {
+          // Position relative to scroll range, clamped to 0-100%
+          const scrollToHeading = Math.max(0, heading.offsetTop - 100);
+          const position = Math.min(scrollToHeading / scrollRange, 1);
+          headingData.push({ el: heading, marker, position });
+          marker.style.top = `${position * 100}%`;
+        }
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollRange > 0 ? Math.min(scrollTop / scrollRange, 1) : 0;
+
+      // Update fill height
+      fill.style.height = `${progress * 100}%`;
+
+      // Update active marker based on scroll progress vs marker position
+      let activeMarker: HTMLButtonElement | null = null;
+      headingData.forEach(({ marker, position }) => {
+        const isPast = progress >= position - 0.001;
+        marker.classList.toggle('past', isPast);
+        if (isPast) activeMarker = marker;
+      });
+
+      markers.forEach(m => m.classList.remove('active'));
+      activeMarker?.classList.add('active');
+    }
+
+    // Click to scroll
+    markers.forEach(marker => {
+      marker.addEventListener('click', () => {
+        const slug = marker.getAttribute('data-heading');
+        const target = document.getElementById(slug!);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', `#${slug}`);
+        }
+      });
+    });
+
+    // Initial calculation
+    calculatePositions();
+    updateProgress();
+
+    // Update on scroll
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateProgress();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Recalculate on resize
+    window.addEventListener('resize', () => {
+      calculatePositions();
+      updateProgress();
+    });
+  }
+
+  // Run on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTimeline);
+  } else {
+    initTimeline();
+  }
+  document.addEventListener('astro:page-load', initTimeline);
+</script>
+
+<style>
+  .scroll-timeline {
+    position: fixed;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 60vh;
+    z-index: 50;
+    /* Expand hover area to include labels */
+    padding-right: 12rem;
+  }
+
+  .timeline-track {
+    position: relative;
+    width: 2px;
+    height: 100%;
+    background: #ddd;
+  }
+
+  :global([data-theme="dark"]) .timeline-track {
+    background: #444;
+  }
+
+  .timeline-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: #999;
+    transition: height 0.1s ease-out;
+  }
+
+  :global([data-theme="dark"]) .timeline-fill {
+    background: #777;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .marker-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: background 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+
+  :global([data-theme="dark"]) .marker-dot {
+    background: #444;
+  }
+
+  .timeline-marker.past .marker-dot {
+    background: #999;
+  }
+
+  :global([data-theme="dark"]) .timeline-marker.past .marker-dot {
+    background: #777;
+  }
+
+  .timeline-marker.active .marker-dot {
+    transform: scale(1.4);
+  }
+
+  .marker-label {
+    position: absolute;
+    left: 1.25rem;
+    white-space: nowrap;
+    font-family: "LMRoman10", "Latin Modern Roman", Palatino, "Palatino Linotype", Georgia, serif;
+    font-size: 0.9rem;
+    color: #ccc;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: opacity 0.15s, transform 0.15s, color 0.15s;
+    pointer-events: none;
+    padding: 0.15rem 0.5rem;
+    background: #fffff8;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  :global([data-theme="dark"]) .marker-label {
+    color: #555;
+    background: #151515;
+  }
+
+  .timeline-marker.past .marker-label {
+    color: #999;
+  }
+
+  :global([data-theme="dark"]) .timeline-marker.past .marker-label {
+    color: #888;
+  }
+
+  .scroll-timeline:hover .marker-label {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .marker-label:hover {
+    color: #666;
+  }
+
+  :global([data-theme="dark"]) .marker-label:hover {
+    color: #aaa;
+  }
+
+  /* Hide on narrow viewports */
+  @media (max-width: 1200px) {
+    .scroll-timeline {
+      display: none;
+    }
+  }
+
+  /* Hide in print */
+  @media print {
+    .scroll-timeline {
+      display: none !important;
+    }
+  }
+</style>

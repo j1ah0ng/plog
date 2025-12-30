@@ -1,5 +1,12 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/TOC.astro';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
 interface Props {
   frontmatter: {
@@ -7,9 +14,10 @@ interface Props {
     date: Date;
     description: string;
   };
+  headings?: Heading[];
 }
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-US', {
@@ -21,6 +29,7 @@ const formatDate = (date: Date) => {
 ---
 
 <BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <TOC headings={headings} />
   <article>
     <h1>{frontmatter.title}</h1>
     <p class="subtitle">

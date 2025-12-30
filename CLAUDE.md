@@ -20,6 +20,7 @@ src/
 ├── components/
 │   ├── Sidenote.astro     # margin footnotes (label/checkbox pattern)
 │   ├── ThemeToggle.astro  # dark/light toggle
+│   ├── TOC.astro          # scroll timeline with section markers
 │   └── interactive/
 │       └── PlotlyChart.astro
 ├── layouts/
@@ -42,7 +43,9 @@ src/
 
 **Code blocks**: github-light Shiki theme, inverted via CSS filter in dark mode. Transparent background matches page.
 
-**Print**: `@media print` forces all sidenotes visible in margins, hides toggle, ensures contrast.
+**Scroll timeline**: Vertical progress bar in left margin with section markers positioned proportionally to document length. Fill grows as you scroll. Hover reveals section titles, click to jump. Desktop only (hidden ≤1200px).
+
+**Print**: `@media print` forces all sidenotes visible in margins, hides toggle + timeline, ensures contrast.
 
 ## Deployment
 

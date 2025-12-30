@@ -45,6 +45,7 @@ $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
 ## Features
 
 - **Sidenotes**: Margin notes on desktop, tap-to-expand on mobile
+- **Scroll timeline**: Progress indicator with section markers, hover to reveal titles
 - **Dark/light mode**: Toggle button, persists preference, respects system default
 - **Responsive**: Wide margins on desktop, full-width on mobile
 - **Print styles**: All sidenotes expanded, good contrast

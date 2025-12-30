@@ -501,8 +501,9 @@ label.margin-toggle:not(.sidenote-number) {
         color: inherit !important;
     }
 
-    /* Hide theme toggle */
-    .theme-toggle {
+    /* Hide theme toggle and scroll timeline */
+    .theme-toggle,
+    .scroll-timeline {
         display: none !important;
     }
 
